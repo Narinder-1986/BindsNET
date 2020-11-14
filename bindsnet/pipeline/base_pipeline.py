@@ -19,9 +19,7 @@ def recursive_to(item, device):
 
     :return: A version of the item that has been sent to a device.
     """
-    print(type(item))
-    print(item)
-
+    
     if isinstance(item, torch.Tensor):
         return item.to(device)
     elif isinstance(item, (string_classes, int, float, bool)):
