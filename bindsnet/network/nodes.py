@@ -505,7 +505,6 @@ class LIFNodes(Nodes):
         """
         # Decay voltages.
         self.v = self.decay * (self.v - self.rest) + self.rest
-        print(self.v)
 
         # Integrate inputs.
         x.masked_fill_(self.refrac_count > 0, 0.0)
