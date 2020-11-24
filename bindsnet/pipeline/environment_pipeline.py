@@ -158,6 +158,9 @@ class EnvironmentPipeline(BasePipeline):
         :return: An OpenAI ``gym`` compatible tuple with modified reward and info.
         """
         # Render game.
+        print("Env Step")
+        print("Render game")
+
         if (
             self.render_interval is not None
             and self.step_count % self.render_interval == 0
@@ -166,22 +169,26 @@ class EnvironmentPipeline(BasePipeline):
 
         # Choose action based on output neuron spiking.
         if self.action_function is not None:
+
             self.last_action = self.action
+            
             if torch.rand(1) < self.percent_of_random_action:
-                self.action = torch.randint(
-                    low=0, high=self.env.action_space.n, size=(1,)
-                )[0]
+                self.action = torch.randint(low=0, high=self.env.action_space.n, size=(1,))[0]
+                print("action","rand < percent")
+                print("action","rand")
             elif self.action_counter > self.random_action_after:
+                print("action","rand > percent")
                 if self.last_action == 0:  # last action was start b
                     self.action = 1  # next action will be fire b
+                    print("action","last start b, next fire be")
                     tqdm.write(f"Fire -> too many times {self.last_action} ")
                 else:
-                    self.action = torch.randint(
-                        low=0, high=self.env.action_space.n, size=(1,)
-                    )[0]
+                    self.action = torch.randint(low=0, high=self.env.action_space.n, size=(1,))[0]
+                    print("action","rand")
                     tqdm.write(f"too many times {self.last_action} ")
             else:
                 self.action = self.action_function(self, output=self.output)
+                print("action","action function")
 
             if self.last_action == self.action:
                 self.action_counter += 1
@@ -198,14 +205,11 @@ class EnvironmentPipeline(BasePipeline):
 
         # Accumulate reward.
         self.accumulated_reward += reward
-
         info["accumulated_reward"] = self.accumulated_reward
 
         return obs, reward, done, info
 
-    def step_(
-        self, gym_batch: Tuple[torch.Tensor, float, bool, Dict], **kwargs
-    ) -> None:
+    def step_(self, gym_batch: Tuple[torch.Tensor, float, bool, Dict], **kwargs) -> None:
         # language=rst
         """
         Run a single iteration of the network and update it and the reward list when
@@ -213,6 +217,9 @@ class EnvironmentPipeline(BasePipeline):
 
         :param gym_batch: An OpenAI ``gym`` compatible tuple.
         """
+
+        print("pipelin Step")
+
         obs, reward, done, info = gym_batch
 
         if self.overlay_t > 1:
